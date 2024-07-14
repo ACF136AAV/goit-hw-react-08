@@ -1,50 +1,61 @@
-import { Suspense, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useEffect, lazy } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
+import { selectIsRefreshing } from '../../redux/auth/selectors';
+import { refreshUser } from '../../redux/auth/operations';
+import Layout from '../Layout';
+import RestrictedRoute from '../RestrictedRoute';
+import PrivateRoute from '../PrivateRoute';
+import { Toaster } from 'react-hot-toast';
 
-import { refreshUser } from "../../redux/auth/operations";
+const HomePage = lazy(() => import('../../pages/HomePage/HomePage'));
+const RegistrationPage = lazy(() =>
+  import('../../pages/RegistrationPage/RegistrationPage')
+);
+const LoginPage = lazy(() => import('../../pages/LoginPage/LoginPage'));
+const ContactsPage = lazy(() =>
+  import('../../pages/ContactsPage/ContactsPage')
+);
 
-import "./App.css";
+const App = () => {
+  const dispatch = useDispatch();
+  const isRefreshing = useSelector(selectIsRefreshing);
 
-import HomePage from "../../pages/HomePage";
-import RegistrationPage from '../../pages/RegistrationPage'
-import LoginPage from "../../pages/LoginPage";
-import ContactsPage from "../../pages/ContactsPage";
-import PrivateRoute from '../PrivateRoute/PrivateRoute'
-import RestrictedRoute from "../RestrictedRoute/RestrictedRoute";
-import Layout from "../Layout/Layout";
-
-
-function App() {
-
-  const dispatch = useDispatch(refreshUser);
   useEffect(() => {
     dispatch(refreshUser());
-  },[dispatch])
+  }, [dispatch]);
 
-  return (
-    <>
-      <Suspense fallback={null}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="/" element={<HomePage />} />
-
-            <Route element={<RestrictedRoute />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegistrationPage />} />
-            </Route>
-
-            <Route element={<PrivateRoute />}>
-              <Route path="/contacts" element={<ContactsPage />} />
-            </Route>
-
-            <Route path="*" element={<div>404</div>} />
-          </Route>
-
-        </Routes>
-      </Suspense>
-    </>
+  return isRefreshing ? (
+    <b>Refreshing user...</b>
+  ) : (
+    <Layout>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/register"
+          element={
+            <RestrictedRoute
+              redirectTo="/contacts"
+              component={<RegistrationPage />}
+            />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <RestrictedRoute redirectTo="/contacts" component={<LoginPage />} />
+          }
+        />
+        <Route
+          path="/contacts"
+          element={
+            <PrivateRoute redirectTo="/login" component={<ContactsPage />} />
+          }
+        />
+      </Routes>
+    </Layout>
   );
-}
+};
 
 export default App;

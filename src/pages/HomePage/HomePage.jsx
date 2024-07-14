@@ -1,14 +1,17 @@
+import style from "./HomePage.module.css";
 
 const HomePage = () => {
   return (
-    <div>
-      <h2>Home Page</h2>
-      <p>Welcome to the Contact Book application!</p>
-      <p>
-        This application allows you to manage your contacts. Please log in or
-        register to start using it.
-      </p>
-    </div>
+    <>
+      <div className={style.container}>
+        <h1 className={style.title}>
+          Task manager welcome page{" "}
+          <span role="img" aria-label="Greeting icon">
+            💁‍♀️
+          </span>
+        </h1>
+      </div>
+    </>
   );
 };
 
