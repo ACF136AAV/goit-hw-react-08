@@ -1,75 +1,41 @@
-import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
-import css from "../ContactForm/ContactForm.module.css";
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux';
+import styles from './ContactForm.module.css';
+import { useState } from 'react';
+import { addContact } from '../../redux/contacts/contactsOps';
 
+const ContactForm = () => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
 
-const ContactForm = ({handleAddContact}) => {
-  const initialValues = {
-    name: "",
-    number: "",
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    dispatch(addContact({ name, number }));
+    setName('');
+    setNumber('');
   };
 
-  const validationSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(3, "Name must be at least 3 characters")
-      .max(50, "Name must be at most 50 characters")
-      .required("Name is required"),
-    number: Yup.string()
-      .min(3, "Number must be at least 3 characters")
-      .max(50, "Number must be at most 50 characters")
-      .required("Number is required"),
-  });
-    
-
-
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleAddContact}
-    >
-        <Form className={css["form"]}>
-          <div className={css["input-box"]}>
-            <div className={css["input-element"]}>
-                <label className={css["label"]}>Name</label>
-                      
-                <Field
-                className={css["input"]}
-                type="text"
-                name="name"
-                />
-        </div>
-                  
-            <div className={css["input-element"]}>
-                      
-                <label className={css["label"]}>
-                Phone number
-                </label>
-                      
-                <Field
-                className={css["input"]}
-                type="text"
-                name="number"
-                />
-              </div>
-                  
-            </div>
-
-          <div>
-            <button type="submit">
-              Add Contact
-            </button>
-          </div>
-        </Form>
-    </Formik>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <label>
+        Name
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </label>
+      <label>
+        Number
+        <input
+          type="text"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+        />
+      </label>
+      <button type="submit">Add contact</button>
+    </form>
   );
 };
-
-ContactForm.propTypes = {
-    handleAddContact: PropTypes.func.isRequired,
-}
-
-
 
 export default ContactForm;

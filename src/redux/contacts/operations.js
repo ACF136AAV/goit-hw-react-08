@@ -1,40 +1,81 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { setAuthToken } from '../auth/operations'; 
 
-axios.defaults.baseURL = "https://connections-api.goit.global/";
+axios.defaults.baseURL = 'https://connections-api.herokuapp.com';
 
 export const fetchContacts = createAsyncThunk(
-  "contacts/fetchAll",
+  'contacts/fetchAll',
   async (_, thunkAPI) => {
     try {
-      const { data } = await axios.get("contacts");
-      return data;
+      const state = thunkAPI.getState();
+      const token = state.auth.token;
+
+      if (!token) {
+        return thunkAPI.rejectWithValue('No token found');
+      }
+
+      setAuthToken(token); 
+
+      const response = await axios.get('/contacts');
+      return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        // Обробка помилки 
+        // thunkAPI.dispatch(logout()); 
+      }
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
 
 export const addContact = createAsyncThunk(
-  "contacts/addContact",
-  async (contactData, thunkAPI) => {
+  'contacts/addContact',
+  async (contact, thunkAPI) => {
     try {
-      const { data } = await axios.post("contacts", contactData);
-      return data;
+      const state = thunkAPI.getState();
+      const token = state.auth.token;
+
+      if (!token) {
+        return thunkAPI.rejectWithValue('No token found');
+      }
+
+      setAuthToken(token); 
+
+      const response = await axios.post('/contacts', contact);
+      return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        // Обробка помилки 
+        // thunkAPI.dispatch(logout()); 
+      }
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
 
 export const deleteContact = createAsyncThunk(
-  "contacts/deleteContact",
-  async (id, thunkAPI) => {
+  'contacts/deleteContact',
+  async (contactId, thunkAPI) => {
     try {
-      const { data } = await axios.delete(`contacts/${id}`);
-      return data;
+      const state = thunkAPI.getState();
+      const token = state.auth.token;
+
+      if (!token) {
+        return thunkAPI.rejectWithValue('No token found');
+      }
+
+      setAuthToken(token); 
+
+      await axios.delete(`/contacts/${contactId}`);
+      return contactId;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      if (axios.isAxiosError(error) && error.response && error.response.status === 401) {
+        // Обробка помилки 
+        // thunkAPI.dispatch(logout()); 
+      }
+      return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
+

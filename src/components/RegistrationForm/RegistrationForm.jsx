@@ -1,37 +1,35 @@
-import { Field, Formik, Form } from "formik"
-import { useId } from 'react'
+import { Formik, Form, Field } from 'formik';
+import { useDispatch } from 'react-redux';
+import { register } from '../../redux/auth/operations';
+import './RegistrationForm.module.css';
 
+const RegistrationForm = () => {
+  const dispatch = useDispatch();
 
-const RegistrationForm = ({submit}) => {
-    const nameId = useId();
-    const emailId = useId();
-    const passwordId = useId();
+  const handleSubmit = (values, { resetForm }) => {
+    dispatch(register(values));
+    resetForm();
+  };
 
-    const handelSubmit = (values,actions) => {
-        submit(values);
-        actions.resetForm()
-        
-    }
-
-
-    return (
-        <Formik
-            initialValues={{ name: "", email: "", password: "" }}
-            onSubmit={handelSubmit}>
-        <Form>
-          <label htmlFor="nameId">Name:</label>
-                <Field name="name" id={nameId} />
-                <hr/>
-          <label htmlFor="emailId">Email:</label>
-                <Field name="email" id={emailId} />
-                <hr/>
-          <label htmlFor="passwordId">Password:</label>
-                <Field name="password" id={passwordId} />
-                <hr/>
+  return (
+    <Formik initialValues={{ name: '', email: '', password: '' }} onSubmit={handleSubmit}>
+      <Form>
+        <label>
+          Name
+          <Field type="text" name="name" />
+        </label>
+        <label>
+          Email
+          <Field type="email" name="email" />
+        </label>
+        <label>
+          Password
+          <Field type="password" name="password" />
+        </label>
         <button type="submit">Register</button>
-        </Form>
-      </Formik>
-    );
-}
+      </Form>
+    </Formik>
+  );
+};
 
-export default RegistrationForm
+export default RegistrationForm;

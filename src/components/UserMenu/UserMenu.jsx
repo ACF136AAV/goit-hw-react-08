@@ -1,19 +1,26 @@
-import PropTypes from 'prop-types'
-import { useSelector } from 'react-redux';
-import { selectUser } from "../../redux/auth/selectors";
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../redux/auth/operations';
+import { selectUserName } from '../../redux/auth/selectors'; 
+import styles from './UserMenu.module.css';
 
-const UserMenu = ({ handleLogOut }) => {
-  const { name } = useSelector(selectUser)
+const UserMenu = () => {
+  const dispatch = useDispatch();
+  const username = useSelector(selectUserName);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
-    <div>
-      <p>Welcome, {name} </p>
-      <button onClick={handleLogOut}>LogOut</button>
+    <div className={styles.container}>
+      <span className={styles.username}>Welcome, {username}</span>
+      <button type="button" onClick={handleLogout} className={styles.button}>
+        Logout
+      </button>
     </div>
   );
 };
 
-UserMenu.propTypes = {
-  handleLogOut:PropTypes.func.isRequired,
-}
-
 export default UserMenu;
+
+

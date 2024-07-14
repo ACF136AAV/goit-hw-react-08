@@ -1,33 +1,12 @@
-import css from "../Contact/Contact.module.css";
-import PropTypes from 'prop-types'
+import styles from './Contact.module.css';
 
-
-
-const Contact = ({ item, handleDelete }) => {
-
-
+const Contact = ({ contact, onDelete }) => {
   return (
-    <div>
-          <li key={item.id} className={css["contact-item"]}>
-            <span className={css["contact-name"]}>{item.name}</span>
-            <span className={css["contact-number"]}>tel.{item.number}</span>
-            <button
-              className={css["button-delete"]}
-              onClick={() => handleDelete(item.id)}
-            >
-              Delete
-            </button>
-          </li>
-    </div>
+    <li className={styles.item}>
+      <p>{contact.name}: {contact.number}</p>
+      <button onClick={() => onDelete(contact.id)}>Delete</button>
+    </li>
   );
-}
-Contact.propTypes = {
-  item: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    number: PropTypes.string.isRequired,
-  }).isRequired,
-  handleDelete: PropTypes.func.isRequired,
 };
 
 export default Contact;
